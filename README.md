@@ -1,31 +1,81 @@
 # qyx的妙妙屋
 
-> 一间装着奇思妙想的小屋。现在住进来的是两款打开网页就能玩的小游戏，以后还会慢慢添置新的房间。
+> 一间装着奇思妙想的小屋。小游戏、实用工具、个人收藏，都会慢慢搬进来。
 >
 > **线上地址：<https://qyx2007fk.github.io/>**
 
-这是 qyx 的个人主页，纯静态站点：**没有构建步骤，没有框架，没有 npm 依赖**，HTML / CSS / 原生 JS 手搓。
+纯静态站点：**没有构建步骤，没有框架，没有 npm 依赖**。HTML / CSS / 原生 JS 手搓，改完推到 `main` 就自动更新。
 
-## 现在收录了什么
+## 屋子里有什么
 
-| 房间 | 游戏 | 线上地址 | 一句介绍 |
-| --- | --- | --- | --- |
-| ROOM 01 | 零号实验区 · LAB ZERO | <https://qyx2007fk.github.io/lab-zero/> | 2D 俯视角战术枪战，五种模式、五名干员，支持局域网 PVE / PVP |
-| ROOM 02 | 卡通大乱斗 · TOON BLASTER | <https://qyx2007fk.github.io/toon-blaster/> | 3D 第一人称卡通射击，五个主题关卡、五把武器、三阶段 BOSS |
+| 房间 | 现在 | 以后 |
+| --- | --- | --- |
+| **游戏厅** | 已开门，两款小游戏在线 | 继续做新的小游戏 |
+| **工具间** | 准备中，先把位置留出来 | 格式转换、图片处理、日常小按钮…… |
+| **收藏柜** | 准备中，第一格还空着 | 书、音乐、网站、图片、奇怪的小东西 |
 
-> 你说的 “blast” 就是 `toon-blaster` 这个仓库，页面里的名字是「卡通大乱斗 · TOON BLASTER」。
+三个房间是**并列关系**，都挂在首页的「房间目录」里；以后想加第四类（比如影音、笔记、实验），照着 `.room-card` 再复制一张就行。
+
+游戏厅现在收录：
+
+- 零号实验区 · LAB ZERO：<https://qyx2007fk.github.io/lab-zero/>
+- 卡通大乱斗 · TOON BLASTER（你说的 blast）：<https://qyx2007fk.github.io/toon-blaster/>
 
 ## 页面结构
 
-- **首屏**：屋名 + 两张游戏拍立得，右上角可开灯 / 关灯
-- **游戏厅**：两张游戏卡，点封面或按钮直接跳转线上游戏
-- **屋主**：门牌、简短介绍、常用工具与常出没的地方
-- **敲门**：GitHub 入口 + 一键复制本页链接
-- **彩蛋**：在页面里依次敲 `qyx`，会下一场星星雨（控制台也有留言）
+1. **首屏**：屋名、两段游戏拍立得、开灯 / 关灯
+2. **房间目录**：游戏厅、工具间、收藏柜三张并列卡片
+3. **小游戏**：两款游戏的大卡片 + 「GAME 03 还在做」
+4. **实用工具**：空状态，预留了工具墙和说明
+5. **个人收藏**：空状态，预留了收藏柜和说明
+6. **关于**：**网站简介** + 屋主 qyx 的门牌和小档案
+7. **敲门**：GitHub 入口 + 复制本页链接
+8. **彩蛋**：依次敲 `qyx`，会下星星雨
+
+## 想改点什么
+
+| 想改的内容 | 去哪里改 |
+| --- | --- |
+| **网站简介** | `index.html` 搜索「网站简介」，改 `blockquote` 里那两段 `<p>` |
+| 两个游戏的链接、卡片文案 | `index.html`（搜索 `qyx2007fk.github.io`） |
+| 房间目录的标题、介绍 | `index.html` 的 `#rooms` 区域 |
+| 工具间 / 收藏柜的空状态文案 | `index.html` 的 `#tools` / `#collection` 区域 |
+| 配色、字号、间距 | `styles.css` 顶部的 `:root` / `[data-theme="day"]` 变量 |
+| 星空、倾斜、彩蛋等交互 | `app.js` |
+| 游戏截图 | 替换 `assets/*.webp`，保持 1200×750（16:10） |
+| 社交分享封面 | `assets/og-cover.png`（1200×630） |
+
+## 以后怎么往里加东西
+
+### 加一款新游戏
+
+复制小游戏区里任意一张 `.game-card`，改这几处：
+
+1. `href` 换成新游戏的线上地址；
+2. `img` 换成新截图，`alt` 写一句画面描述；
+3. `<h3>`、`.game-desc`、`.game-tags`、`.game-meta` 改成新游戏的信息；
+4. 上面的「房间目录」里，把游戏厅卡片的「2 款已上线」改成实际数量。
+
+### 工具 / 收藏有内容了
+
+现在这两个区块用的是 `.empty-room` 空状态（虚线框 + 工具墙 / 收藏柜插画）。等内容做好后，把整块 `.empty-room` 换成一个或多个内容卡片即可。
+
+- 工具：建议保留 `#tools` 的标题和介绍，把空状态换成工具卡片；
+- 收藏：建议保留「收藏柜」的说法，一个格子放一件东西。
+
+不确定怎么排版的话，直接把内容和素材丢给我，我按现有视觉语言补进去。
+
+### 加一个新房间
+
+1. 在「房间目录」里复制一张 `.room-card`，改 `data-room`、标题、描述和 `href`；
+2. 在下面复制一个 `.tools` 或 `.collection` 区块，改 `id`、编号和内容；
+3. 把后面的「关于」编号顺延一位，导航里也可以加一个链接。
+
+### 网站简介写在哪
+
+`index.html` 里搜索 `<!-- ✍️ 网站简介`，下面就是那两段文字；直接改字即可，样式会跟着走。默认写的是一个草稿版本，随时可以按你的语气重写。
 
 ## 本地预览
-
-在 `qyx-wonder-room/` 目录里启动一个静态服务：
 
 ```bash
 cd qyx-wonder-room
@@ -34,63 +84,32 @@ python3 -m http.server 4173
 
 然后打开 <http://127.0.0.1:4173/>。
 
-> 建议用本地服务预览，直接双击 `index.html` 也能打开，但个别浏览器会限制 `file://` 下的字体加载。
+> 直接双击 `index.html` 也能打开，但个别浏览器会限制 `file://` 下的字体加载，建议用本地服务。
 
-## 想改点什么
+## 部署
 
-| 想改的内容 | 去哪里改 |
-| --- | --- |
-| 两个游戏的链接、卡片文案 | `index.html`（搜索 `qyx2007fk.github.io`） |
-| 屋名、介绍、小档案 | `index.html` |
-| 配色、字号、间距 | `styles.css` 顶部的 `:root` / `[data-theme="day"]` 变量 |
-| 星空、倾斜、彩蛋等交互 | `app.js` |
-| 游戏截图 | 替换 `assets/*.webp`，保持 1200×750（16:10）即可 |
-| 社交分享封面 | `assets/og-cover.png`（1200×630） |
+站点已经部署在 **<https://qyx2007fk.github.io/>**（仓库：`qyx2007fk/qyx2007fk.github.io`，`main` 分支根目录，GitHub Pages 自动构建）。
 
-## 部署到 GitHub Pages
+以后更新：
 
-### 方案 A：作为个人主页（推荐）
-
-这样访问地址就是 **<https://qyx2007fk.github.io/>**，最像“个人网站”。
-
-1. 在 GitHub 新建一个仓库，名字必须是 `qyx2007fk.github.io`（把 `qyx2007fk` 换成你的 GitHub 用户名）。
-2. 把本目录里的文件推到该仓库的 `main` 分支：
-
-   ```bash
-   cd qyx-wonder-room
-   git init
-   git add .
-   git commit -m "qyx的妙妙屋：第一版"
-   git branch -M main
-   git remote add origin https://github.com/qyx2007fk/qyx2007fk.github.io.git
-   git push -u origin main
-   ```
-
-3. 打开仓库的 **Settings → Pages**，Source 选择 **Deploy from a branch**，分支选 `main`、目录选 `/ (root)`，保存。
-4. 等一两分钟，访问 <https://qyx2007fk.github.io/>。
-
-### 方案 B：作为项目页
-
-仓库名随意（比如 `wonder-room`），Pages 同样选 `main` / root，访问地址会变成：
-
-```text
-https://qyx2007fk.github.io/wonder-room/
+```bash
+cd qyx-wonder-room
+git add .
+git commit -m "更新妙妙屋"
+git push
 ```
 
-站内所有资源都是相对路径，放在子路径下也能正常工作。
+等一两分钟，线上自动更新。
 
-### 部署后还可以再补的
-
-- `index.html` 里的 `og:image` / `twitter:image` / `canonical` 已经指向 `https://qyx2007fk.github.io/`；如果之后换域名或改成子路径，记得一起改。
-- 想换域名的话，在仓库根目录加一个 `CNAME` 文件，内容写你的域名。
+如果以后要换域名或改成子路径，记得同步改 `index.html` 里的 `canonical`、`og:image`、`twitter:image`；换域名再加一个 `CNAME` 文件。
 
 ## 文件结构
 
 ```text
 qyx-wonder-room/
-├── index.html              # 首页
+├── index.html              # 首页（房间目录 / 游戏 / 工具 / 收藏 / 简介）
 ├── 404.html                # 走错房间时的小提示
-├── styles.css              # 全部样式（含夜间 / 日间主题）
+├── styles.css              # 全部样式（夜间 / 日间主题、房间卡片、空状态）
 ├── app.js                  # 星空、滚动、倾斜、开灯、彩蛋
 ├── favicon.svg             # 站点图标
 ├── site.webmanifest        # 添加到主屏幕用
@@ -99,7 +118,7 @@ qyx-wonder-room/
     ├── lab-zero.webp       # 首屏截图
     ├── lab-zero-boss.webp  # 游戏卡截图
     ├── toon-blaster.webp   # 卡通大乱斗截图
-    ├── zcool-subset.woff2  # 站酷快乐体（按页面用字裁剪，约 37 KB）
+    ├── zcool-subset.woff2  # 站酷快乐体（按页面用字裁剪）
     ├── fredoka-latin.woff2 # Fredoka 拉丁字母
     ├── og-cover.png        # 分享封面 1200×630
     └── apple-touch-icon.png
@@ -114,4 +133,4 @@ qyx-wonder-room/
 
 ## 兼容性
 
-面向现代浏览器（Chrome / Edge / Safari / Firefox 近两年的版本）。启用了 `prefers-reduced-motion` 时，星空、滚动进场、卡片倾斜等动态效果会自动收敛为静态。
+面向现代浏览器（Chrome / Edge / Safari / Firefox 近两年的版本）。开启 `prefers-reduced-motion` 时，星空、滚动进场、卡片倾斜等动态效果会自动收敛为静态。

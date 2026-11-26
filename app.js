@@ -407,7 +407,7 @@
 
   document.addEventListener('pointerdown', function (e) {
     if (e.button !== 0) return;
-    var hit = e.target.closest('.btn, .game-card, .soon-link, .brand');
+    var hit = e.target.closest('.btn, .game-card, .soon-link, .brand, .room-card');
     if (hit) burst(e.clientX, e.clientY);
   }, { passive: true });
 

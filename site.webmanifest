@@ -1,7 +1,7 @@
 {
   "name": "qyx的妙妙屋",
   "short_name": "妙妙屋",
-  "description": "一间装着奇思妙想的小屋，两款打开网页就能玩的小游戏。",
+  "description": "一间装着奇思妙想的小屋：小游戏、实用工具和个人收藏，慢慢添置。",
   "lang": "zh-CN",
   "start_url": "./",
   "scope": "./",
