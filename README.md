@@ -6,6 +6,12 @@
 
 纯静态站点：**没有构建步骤，没有框架，没有 npm 依赖**。HTML / CSS / 原生 JS 手搓，改完推到 `main` 就自动更新。
 
+## 找到 qyx
+
+- QQ：`1545648604`（网站上点 QQ 号可以直接复制）
+- B站：<https://space.bilibili.com/495846524>
+- GitHub：<https://github.com/qyx2007fk>
+
 ## 屋子里有什么
 
 | 房间 | 现在 | 以后 |

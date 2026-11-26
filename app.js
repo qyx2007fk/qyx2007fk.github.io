@@ -353,36 +353,58 @@
   /* ---------------------------------------------------------
      复制链接
      --------------------------------------------------------- */
-  var copyBtn = document.getElementById('copyLink');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', function () {
-      var url = window.location.href.split('#')[0];
-
-      function fallbackCopy() {
-        var area = document.createElement('textarea');
-        area.value = url;
-        area.setAttribute('readonly', '');
-        area.style.position = 'fixed';
-        area.style.opacity = '0';
-        document.body.appendChild(area);
-        area.select();
-        try { document.execCommand('copy'); } catch (e) { /* ignore */ }
+  function fallbackCopy(text) {
+    return new Promise(function (resolve, reject) {
+      var area = document.createElement('textarea');
+      area.value = text;
+      area.setAttribute('readonly', '');
+      area.style.position = 'fixed';
+      area.style.opacity = '0';
+      document.body.appendChild(area);
+      area.select();
+      try {
+        var ok = document.execCommand('copy');
         document.body.removeChild(area);
-      }
-
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(url).then(function () {
-          toast('链接已复制，去分享给朋友吧 ✦');
-        }).catch(function () {
-          fallbackCopy();
-          toast('链接已复制，去分享给朋友吧 ✦');
-        });
-      } else {
-        fallbackCopy();
-        toast('链接已复制，去分享给朋友吧 ✦');
+        if (ok) resolve();
+        else reject(new Error('copy failed'));
+      } catch (err) {
+        document.body.removeChild(area);
+        reject(err);
       }
     });
   }
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).catch(function () {
+        return fallbackCopy(text);
+      });
+    }
+    return fallbackCopy(text);
+  }
+
+  function copyWithToast(text, message) {
+    copyText(text).then(function () {
+      toast(message);
+    }).catch(function () {
+      toast('复制失败，手动选一下吧');
+    });
+  }
+
+  var copyBtn = document.getElementById('copyLink');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      copyWithToast(window.location.href.split('#')[0], '链接已复制，去分享给朋友吧 ✦');
+    });
+  }
+
+  document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var text = btn.getAttribute('data-copy');
+      if (!text) return;
+      copyWithToast(text, btn.getAttribute('data-copy-msg') || '已复制');
+    });
+  });
 
   /* ---------------------------------------------------------
      点按小星星 + 彩蛋

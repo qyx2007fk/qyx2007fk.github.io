@@ -1451,6 +1451,20 @@ h1, h2, h3, p { margin: 0; }
 }
 .facts dd a .icon { width: 14px; height: 14px; }
 .facts dd a:hover { border-bottom-color: var(--highlight); }
+.fact-sep {
+  padding: 0 6px;
+  color: var(--muted-2);
+}
+.fact-link {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px dashed var(--highlight-line);
+  background: none;
+  color: var(--highlight);
+  font: inherit;
+  cursor: pointer;
+}
+.fact-link:hover { border-bottom-color: var(--highlight); }
 
 /* ---------- 工具间 / 收藏柜（空状态） ---------- */
 .tools,
@@ -1947,6 +1961,27 @@ h1, h2, h3, p { margin: 0; }
   border-color: var(--yellow);
   color: var(--yellow);
 }
+.door-footnote {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 12px;
+}
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--yellow);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.link-btn:hover { color: #fff; }
 
 .door-spark {
   position: absolute;
@@ -1982,6 +2017,16 @@ h1, h2, h3, p { margin: 0; }
   transition: color 0.25s;
 }
 .foot-inner a:hover { color: var(--highlight); }
+.foot-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+  transition: color 0.25s;
+}
+.foot-link:hover { color: var(--highlight); }
 
 /* ---------- toast & effects ---------- */
 .toast {
