@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN" class="no-js" data-theme="night">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0716" />
+<title>照片墙 · qyx的妙妙屋</title>
+<meta name="description" content="qyx的照片墙：一些随手拍的照片，和想记住的瞬间。手机、电脑都可以上传，传完自动出现在墙上。" />
+<meta name="author" content="qyx" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://qyx2007fk.github.io/gallery.html" />
+<meta property="og:site_name" content="qyx的妙妙屋" />
+<meta property="og:locale" content="zh_CN" />
+<meta property="og:title" content="照片墙 · qyx的妙妙屋" />
+<meta property="og:description" content="一些随手拍的照片，和想记住的瞬间。" />
+<meta property="og:image" content="https://qyx2007fk.github.io/assets/og-cover.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="照片墙 · qyx的妙妙屋" />
+<meta name="twitter:description" content="一些随手拍的照片，和想记住的瞬间。" />
+<meta name="twitter:image" content="https://qyx2007fk.github.io/assets/og-cover.png" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="manifest" href="site.webmanifest" />
+<link rel="canonical" href="https://qyx2007fk.github.io/gallery.html" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="preload" href="assets/zcool-subset.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="gallery.css" />
+<script>
+  document.documentElement.classList.replace('no-js', 'js');
+  try {
+    if (localStorage.getItem('qyx-theme') === 'day') {
+      document.documentElement.dataset.theme = 'day';
+    }
+  } catch (e) {}
+</script>
+</head>
+<body class="gallery-page">
+
+<a class="skip-link" href="#main">跳到主要内容</a>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<canvas class="sky" id="sky" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <symbol id="i-star" viewBox="0 0 24 24">
+    <path d="M12 1.6c.72 5.62 3.94 8.84 9.56 9.56-5.62.72-8.84 3.94-9.56 9.56-.72-5.62-3.94-8.84-9.56-9.56C8.06 10.44 11.28 7.22 12 1.6Z" fill="currentColor"/>
+  </symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24">
+    <path d="M7 17 17 7M8.4 7H17v8.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-github" viewBox="0 0 24 24">
+    <path d="M12 .5C5.73.5.5 5.73.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2.2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.12 3.05.74.81 1.18 1.84 1.18 3.1 0 4.43-2.7 5.4-5.26 5.69.41.35.78 1.05.78 2.12v3.14c0 .31.2.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z" fill="currentColor"/>
+  </symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    <path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24">
+    <path d="M20.6 14.3A8.8 8.8 0 0 1 9.7 3.4a8.8 8.8 0 1 0 10.9 10.9Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24">
+    <path d="M4.2 8.6h3.1l1.5-2.1h6.4l1.5 2.1h3.1a1.6 1.6 0 0 1 1.6 1.6v7.2a1.6 1.6 0 0 1-1.6 1.6H4.2a1.6 1.6 0 0 1-1.6-1.6v-7.2a1.6 1.6 0 0 1 1.6-1.6Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <circle cx="12" cy="13.4" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  </symbol>
+  <symbol id="i-close" viewBox="0 0 24 24">
+    <path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<header class="site-head" id="top">
+  <div class="wrap head-inner">
+    <a class="brand" href="index.html" aria-label="qyx的妙妙屋，回到首页">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <rect width="64" height="64" rx="17" fill="#ffd84f"/>
+          <path d="M32 11.5 52 29.2v22.3a3.4 3.4 0 0 1-3.4 3.4H15.4A3.4 3.4 0 0 1 12 51.5V29.2Z" fill="#140d26"/>
+          <path d="M32 25.8c.6 4.5 3.2 7.1 7.7 7.7-4.5.6-7.1 3.2-7.7 7.7-.6-4.5-3.2-7.1-7.7-7.7 4.5-.6 7.1-3.2 7.7-7.7Z" fill="#ffd84f"/>
+        </svg>
+      </span>
+      <span class="brand-text">qyx <i>的</i><b>妙妙屋</b></span>
+    </a>
+
+    <nav class="nav" aria-label="主导航">
+      <a href="index.html#rooms">房间</a>
+      <a href="index.html#games">小游戏</a>
+      <a href="gallery.html" aria-current="page">画廊</a>
+      <a href="index.html#about">关于</a>
+      <a href="index.html#door">敲门</a>
+    </nav>
+
+    <div class="head-actions">
+      <button class="icon-btn theme-toggle" id="themeToggle" type="button" aria-label="切换到日间模式" title="开灯 / 关灯">
+        <svg class="icon icon-sun"><use href="#i-sun"/></svg>
+        <svg class="icon icon-moon"><use href="#i-moon"/></svg>
+      </button>
+      <a class="gh-link" href="https://github.com/qyx2007fk" target="_blank" rel="noopener noreferrer">
+        <svg class="icon"><use href="#i-github"/></svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="gallery-hero wrap" aria-labelledby="gallery-title">
+    <div class="gallery-hero-copy">
+      <p class="sec-kicker"><span>ROOM 02</span><i></i>GALLERY / 照片墙</p>
+      <h1 class="gallery-title" id="gallery-title">把喜欢的瞬间，<br /><em>挂在这里。</em></h1>
+      <p class="gallery-sub">一些随手拍的照片，和想记住的瞬间。手机、电脑都可以上传，传完就会出现在墙上。</p>
+    </div>
+    <div class="gallery-hero-side">
+      <a class="btn btn-primary gallery-upload-btn" href="upload.html">
+        <svg class="icon"><use href="#i-camera"/></svg> 上传照片
+      </a>
+      <p class="gallery-count" id="galleryCount" aria-live="polite">正在数照片…</p>
+      <p class="gallery-side-note">屋主入口 · 上传后自动上墙</p>
+    </div>
+  </section>
+
+  <section class="gallery-body wrap" aria-label="照片墙">
+    <div class="gallery-grid" id="galleryGrid" aria-busy="true"></div>
+
+    <div class="gallery-empty" id="galleryEmpty" hidden>
+      <span class="gallery-empty-icon" aria-hidden="true"><svg class="icon"><use href="#i-camera"/></svg></span>
+      <h2>照片墙还空着</h2>
+      <p>第一张照片，正在路上。</p>
+      <div class="gallery-empty-actions">
+        <a class="btn btn-primary" href="upload.html">上传第一张照片</a>
+        <a class="btn btn-ghost" href="index.html#rooms">回屋里逛逛</a>
+      </div>
+    </div>
+
+    <div class="gallery-error" id="galleryError" hidden>
+      <h2>照片墙暂时没打开</h2>
+      <p>可能是网络走神了。刷新一下，或者去 GitHub 看看。</p>
+      <div class="gallery-empty-actions">
+        <button class="btn btn-primary" id="retryGallery" type="button">再试一次</button>
+        <a class="btn btn-ghost" href="https://github.com/qyx2007fk/qyx2007fk.github.io/tree/main/gallery" target="_blank" rel="noopener noreferrer">去 GitHub 看看</a>
+      </div>
+    </div>
+
+    <noscript><p class="gallery-noscript">照片墙需要 JavaScript 才能显示。你可以直接去 <a href="upload.html">上传照片</a>。</p></noscript>
+  </section>
+
+  <section class="gallery-cta wrap">
+    <div>
+      <p class="sec-kicker"><span>✦</span><i></i>MORE MOMENTS</p>
+      <h2>还有想留住的瞬间？</h2>
+      <p>手机拍完，顺手挂上来。</p>
+    </div>
+    <a class="btn btn-primary" href="upload.html"><svg class="icon"><use href="#i-camera"/></svg> 上传照片</a>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-inner">
+    <p>© 2026 qyx <span class="dot-sep" aria-hidden="true">·</span> 妙妙屋的灯一直亮着</p>
+    <p>照片墙 <span class="foot-star" aria-hidden="true">✦</span> 每一张都算数</p>
+    <a href="index.html">回到屋顶 <span aria-hidden="true">↑</span></a>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="照片查看" hidden>
+  <button class="lightbox-close" id="lightboxClose" type="button" aria-label="关闭照片查看"><svg class="icon"><use href="#i-close"/></svg></button>
+  <button class="lightbox-nav lightbox-prev" id="lightboxPrev" type="button" aria-label="上一张">←</button>
+  <figure class="lightbox-figure">
+    <img id="lightboxImg" alt="" />
+    <figcaption>
+      <span class="lightbox-caption" id="lightboxCaption"></span>
+      <span class="lightbox-meta" id="lightboxMeta"></span>
+    </figcaption>
+  </figure>
+  <button class="lightbox-nav lightbox-next" id="lightboxNext" type="button" aria-label="下一张">→</button>
+</div>
+
+<script src="app.js" defer></script>
+<script src="gallery.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN" class="no-js" data-theme="night">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0716" />
+<meta name="robots" content="noindex" />
+<title>上传照片 · qyx的妙妙屋</title>
+<meta name="description" content="qyx的照片墙上墙处：在手机或电脑上选照片，压缩后提交到 GitHub。" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="preload" href="assets/zcool-subset.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="gallery.css" />
+<script>
+  document.documentElement.classList.replace('no-js', 'js');
+  try {
+    if (localStorage.getItem('qyx-theme') === 'day') {
+      document.documentElement.dataset.theme = 'day';
+    }
+  } catch (e) {}
+</script>
+</head>
+<body class="upload-page">
+
+<a class="skip-link" href="#main">跳到主要内容</a>
+<canvas class="sky" id="sky" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <symbol id="i-star" viewBox="0 0 24 24">
+    <path d="M12 1.6c.72 5.62 3.94 8.84 9.56 9.56-5.62.72-8.84 3.94-9.56 9.56-.72-5.62-3.94-8.84-9.56-9.56C8.06 10.44 11.28 7.22 12 1.6Z" fill="currentColor"/>
+  </symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24">
+    <path d="M7 17 17 7M8.4 7H17v8.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    <path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24">
+    <path d="M20.6 14.3A8.8 8.8 0 0 1 9.7 3.4a8.8 8.8 0 1 0 10.9 10.9Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24">
+    <path d="M4.2 8.6h3.1l1.5-2.1h6.4l1.5 2.1h3.1a1.6 1.6 0 0 1 1.6 1.6v7.2a1.6 1.6 0 0 1-1.6 1.6H4.2a1.6 1.6 0 0 1-1.6-1.6v-7.2a1.6 1.6 0 0 1 1.6-1.6Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <circle cx="12" cy="13.4" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  </symbol>
+</svg>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="index.html" aria-label="qyx的妙妙屋，回到首页">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <rect width="64" height="64" rx="17" fill="#ffd84f"/>
+          <path d="M32 11.5 52 29.2v22.3a3.4 3.4 0 0 1-3.4 3.4H15.4A3.4 3.4 0 0 1 12 51.5V29.2Z" fill="#140d26"/>
+          <path d="M32 25.8c.6 4.5 3.2 7.1 7.7 7.7-4.5.6-7.1 3.2-7.7 7.7-.6-4.5-3.2-7.1-7.7-7.7 4.5-.6 7.1-3.2 7.7-7.7Z" fill="#ffd84f"/>
+        </svg>
+      </span>
+      <span class="brand-text">qyx <i>的</i><b>妙妙屋</b></span>
+    </a>
+
+    <div class="head-actions head-end">
+      <a class="back-link" href="gallery.html">回到照片墙</a>
+      <button class="icon-btn theme-toggle" id="themeToggle" type="button" aria-label="切换到日间模式" title="开灯 / 关灯">
+        <svg class="icon icon-sun"><use href="#i-sun"/></svg>
+        <svg class="icon icon-moon"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="upload-main wrap">
+
+  <noscript><p class="gallery-noscript">上传页需要 JavaScript 才能压缩和提交照片。</p></noscript>
+
+  <header class="upload-hero">
+    <p class="sec-kicker"><span>UPLOAD</span><i></i>屋主入口 / 照片上传</p>
+    <h1>把照片，<br class="br-mobile" /><em>挂上墙。</em></h1>
+    <p>手机、电脑都行。一次最多 20 张；照片会在浏览器里自动压小，再提交到 GitHub。</p>
+    <p class="upload-privacy">照片会公开显示在照片墙，也会存进这个公开仓库；别传私人照片。</p>
+  </header>
+
+  <section class="upload-panel" aria-labelledby="tokenTitle">
+    <div class="panel-head">
+      <div>
+        <p class="panel-kicker">STEP 01</p>
+        <h2 id="tokenTitle">连接 GitHub</h2>
+      </div>
+      <span class="token-state" id="tokenState">未连接</span>
+    </div>
+    <p class="panel-desc">上传需要一枚只属于这个仓库的 GitHub token。它只保存在你的浏览器里，不会写进网站。</p>
+
+    <div class="token-row">
+      <input class="field" type="password" id="tokenInput" placeholder="github_pat_..." autocomplete="off" spellcheck="false" aria-label="GitHub token" />
+      <label class="remember"><input type="checkbox" id="rememberToken" /> 记住这台设备</label>
+      <button class="btn btn-primary" id="saveToken" type="button">保存并验证</button>
+    </div>
+
+    <div class="token-connected" id="tokenConnected" hidden>
+      <span><i aria-hidden="true"></i>已连接 <b id="tokenRepo">qyx2007fk.github.io</b></span>
+      <button class="text-btn" id="clearToken" type="button">清除 token</button>
+    </div>
+
+    <p class="token-error" id="tokenError" role="alert" hidden></p>
+
+    <details class="token-help">
+      <summary>第一次用？点这里看怎么创建 token</summary>
+      <ol>
+        <li>打开 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">GitHub 新建 Fine-grained token</a>。</li>
+        <li>Token name 随便写，Expiration 选 7 天或 30 天。</li>
+        <li>Repository access 选 <b>Only select repositories</b>，只勾 <code>qyx2007fk.github.io</code>。</li>
+        <li>Repository permissions → <b>Contents</b> 选 <b>Read and write</b>；Metadata 会自动是 Read。</li>
+        <li>Generate token，复制 <code>github_pat_...</code> 回来粘贴。</li>
+      </ol>
+      <p>这个 token 只能改这个仓库的内容。不要把 token 发到任何聊天窗口；如果泄露，立刻去 GitHub 删除。</p>
+    </details>
+  </section>
+
+  <section class="upload-panel" aria-labelledby="pickTitle">
+    <div class="panel-head">
+      <div>
+        <p class="panel-kicker">STEP 02</p>
+        <h2 id="pickTitle">选照片</h2>
+      </div>
+      <span class="file-count" id="fileCount">0 / 20</span>
+    </div>
+
+    <button class="dropzone" id="dropzone" type="button">
+      <span class="dz-icon" aria-hidden="true"><svg class="icon"><use href="#i-camera"/></svg></span>
+      <strong>点这里选照片</strong>
+      <span class="dz-sub">也可以把照片拖进来 · 手机可以拍照或从相册选</span>
+      <span class="dz-formats">JPG / PNG / WebP · 一次最多 20 张</span>
+    </button>
+    <input type="file" id="fileInput" accept="image/*" multiple hidden />
+
+    <div class="preview-grid" id="previewGrid" hidden></div>
+
+    <div class="upload-actions">
+      <button class="btn btn-primary" id="uploadBtn" type="button" disabled>上传到照片墙</button>
+      <button class="btn btn-ghost" id="clearBtn" type="button" disabled>清空</button>
+      <span class="upload-hint" id="uploadHint">先选照片，再点上传。</span>
+    </div>
+
+    <div class="upload-progress" id="progressWrap" hidden>
+      <div class="bar" id="progressTrack" role="progressbar" aria-label="上传进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="progressBar"></i></div>
+      <p id="progressText">准备中…</p>
+    </div>
+
+    <p class="upload-error" id="uploadError" role="alert" hidden></p>
+  </section>
+
+  <section class="upload-success" id="successPanel" role="status" aria-live="polite" hidden>
+    <p class="panel-kicker">DONE</p>
+    <h2>照片已经出发了 <span aria-hidden="true">✦</span></h2>
+    <p id="successText">已经提交到 GitHub。GitHub Pages 大概需要 1 分钟构建，稍等一下照片墙就会更新。</p>
+    <div class="upload-actions">
+      <a class="btn btn-primary" id="successLink" href="gallery.html">打开照片墙</a>
+      <button class="btn btn-ghost" id="againBtn" type="button">再传一组</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-inner">
+    <p>© 2026 qyx <span class="dot-sep" aria-hidden="true">·</span> 这是屋主的上传间</p>
+    <p>照片会被压小再提交，原图请自己留好</p>
+    <a href="gallery.html">回到照片墙 <span aria-hidden="true">↑</span></a>
+  </div>
+</footer>
+
+<script src="app.js" defer></script>
+<script src="upload.js" defer></script>
+</body>
+</html>

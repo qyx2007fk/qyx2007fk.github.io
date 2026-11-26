@@ -1,6 +1,6 @@
 # qyx的妙妙屋
 
-> 一间装着奇思妙想的小屋。小游戏、实用工具、个人收藏，都会慢慢搬进来。
+> 一间装着奇思妙想的小屋。小游戏、照片墙、实用工具、个人收藏，都会慢慢搬进来。
 >
 > **线上地址：<https://qyx2007fk.github.io/>**
 
@@ -11,69 +11,69 @@
 | 房间 | 现在 | 以后 |
 | --- | --- | --- |
 | **游戏厅** | 已开门，两款小游戏在线 | 继续做新的小游戏 |
+| **照片墙** | 已开门，可以上传照片 | 随手拍的照片、想记住的瞬间 |
 | **工具间** | 准备中，先把位置留出来 | 格式转换、图片处理、日常小按钮…… |
 | **收藏柜** | 准备中，第一格还空着 | 书、音乐、网站、图片、奇怪的小东西 |
 
-三个房间是**并列关系**，都挂在首页的「房间目录」里；以后想加第四类（比如影音、笔记、实验），照着 `.room-card` 再复制一张就行。
+四个房间是**并列关系**，都挂在首页的「房间目录」里；想加第五类，照着 `.room-card` 再复制一张即可。
 
 游戏厅现在收录：
 
 - 零号实验区 · LAB ZERO：<https://qyx2007fk.github.io/lab-zero/>
 - 卡通大乱斗 · TOON BLASTER（你说的 blast）：<https://qyx2007fk.github.io/toon-blaster/>
 
+## 照片墙怎么用
+
+照片墙在 **<https://qyx2007fk.github.io/gallery.html>**。
+
+### 上传照片（屋主）
+
+1. 打开照片墙，点「上传照片」进入 **<https://qyx2007fk.github.io/upload.html>**。
+2. 第一次用，先创建一枚 **Fine-grained GitHub token**：
+   - 打开 <https://github.com/settings/personal-access-tokens/new>
+   - Token name 随便写，Expiration 建议选 7 天或 30 天
+   - **Repository access** → `Only select repositories` → 只勾 `qyx2007fk.github.io`
+   - **Repository permissions** → `Contents` → `Read and write`（Metadata 会自动是 Read）
+   - 生成后复制 `github_pat_...`，回到上传页粘贴，点「保存并验证」
+3. 点选照片，或直接把照片拖进虚线框。手机上会打开相机 / 相册。
+4. 可以给每张照片写一句说明（可选），点「上传到照片墙」。
+5. 照片会在浏览器里自动压到最长边 2200px、JPEG 质量 86%，然后提交到 GitHub。
+6. GitHub Pages 大概需要 **1 分钟**构建，之后刷新照片墙就能看到。
+
+一次最多 20 张；单张超过 30MB 会被跳过。
+
+### token 存在哪
+
+- token 只保存在**当前浏览器**：默认 `sessionStorage`；勾选「记住这台设备」后存 `localStorage`。
+- token **不会**写进网站、不会提交到仓库、不会发给 GitHub 以外的任何地方。
+- 页面在 `upload.html`，加了 `noindex`；但页面本身是公开的，**没有 token 的人不能上传**。
+- token 只给这个仓库的 `Contents` 读写权限，建议设置过期时间。泄露了立刻去 GitHub 删除。
+- 上传的照片会**公开**显示在照片墙，也会存进这个公开仓库；不要传私人照片。
+
+### 照片存在哪
+
+```text
+gallery/
+├── index.json          # 照片清单（文件名、说明、日期、尺寸）
+└── photo-....jpg       # 压缩后的照片
+```
+
+照片墙读取 `gallery/index.json` 渲染。想删照片：在 GitHub 删除对应图片，并把 `index.json` 里那一条删掉，提交即可。
+
 ## 页面结构
 
-1. **首屏**：屋名、两段游戏拍立得、开灯 / 关灯
-2. **房间目录**：游戏厅、工具间、收藏柜三张并列卡片
-3. **小游戏**：两款游戏的大卡片 + 「GAME 03 还在做」
-4. **实用工具**：空状态，预留了工具墙和说明
-5. **个人收藏**：空状态，预留了收藏柜和说明
-6. **关于**：**网站简介** + 屋主 qyx 的门牌和小档案
-7. **敲门**：GitHub 入口 + 复制本页链接
-8. **彩蛋**：依次敲 `qyx`，会下星星雨
-
-## 想改点什么
-
-| 想改的内容 | 去哪里改 |
-| --- | --- |
-| **网站简介** | `index.html` 搜索「网站简介」，改 `blockquote` 里那两段 `<p>` |
-| 两个游戏的链接、卡片文案 | `index.html`（搜索 `qyx2007fk.github.io`） |
-| 房间目录的标题、介绍 | `index.html` 的 `#rooms` 区域 |
-| 工具间 / 收藏柜的空状态文案 | `index.html` 的 `#tools` / `#collection` 区域 |
-| 配色、字号、间距 | `styles.css` 顶部的 `:root` / `[data-theme="day"]` 变量 |
-| 星空、倾斜、彩蛋等交互 | `app.js` |
-| 游戏截图 | 替换 `assets/*.webp`，保持 1200×750（16:10） |
-| 社交分享封面 | `assets/og-cover.png`（1200×630） |
-
-## 以后怎么往里加东西
-
-### 加一款新游戏
-
-复制小游戏区里任意一张 `.game-card`，改这几处：
-
-1. `href` 换成新游戏的线上地址；
-2. `img` 换成新截图，`alt` 写一句画面描述；
-3. `<h3>`、`.game-desc`、`.game-tags`、`.game-meta` 改成新游戏的信息；
-4. 上面的「房间目录」里，把游戏厅卡片的「2 款已上线」改成实际数量。
-
-### 工具 / 收藏有内容了
-
-现在这两个区块用的是 `.empty-room` 空状态（虚线框 + 工具墙 / 收藏柜插画）。等内容做好后，把整块 `.empty-room` 换成一个或多个内容卡片即可。
-
-- 工具：建议保留 `#tools` 的标题和介绍，把空状态换成工具卡片；
-- 收藏：建议保留「收藏柜」的说法，一个格子放一件东西。
-
-不确定怎么排版的话，直接把内容和素材丢给我，我按现有视觉语言补进去。
-
-### 加一个新房间
-
-1. 在「房间目录」里复制一张 `.room-card`，改 `data-room`、标题、描述和 `href`；
-2. 在下面复制一个 `.tools` 或 `.collection` 区块，改 `id`、编号和内容；
-3. 把后面的「关于」编号顺延一位，导航里也可以加一个链接。
-
-### 网站简介写在哪
-
-`index.html` 里搜索 `<!-- ✍️ 网站简介`，下面就是那两段文字；直接改字即可，样式会跟着走。默认写的是一个草稿版本，随时可以按你的语气重写。
+1. **首页 `index.html`**
+   - 首屏：屋名 + 两张游戏拍立得 + 开灯 / 关灯
+   - 房间目录：游戏厅、照片墙、工具间、收藏柜四张并列卡片
+   - 小游戏：两款游戏 + 「GAME 03 还在做」
+   - 实用工具：空状态，预留工具墙
+   - 个人收藏：空状态，预留收藏柜
+   - 关于：**网站简介** + 屋主 qyx
+   - 敲门：GitHub + 复制本页链接
+   - 彩蛋：依次敲 `qyx` 会下星星雨
+2. **照片墙 `gallery.html`**：瀑布流 + 灯箱（键盘 ← → / Esc、手机左右滑）
+3. **上传页 `upload.html`**：token 连接、选照片、压缩、提交
+4. **404 `404.html`**：走错房间时的小提示
 
 ## 本地预览
 
@@ -84,7 +84,42 @@ python3 -m http.server 4173
 
 然后打开 <http://127.0.0.1:4173/>。
 
-> 直接双击 `index.html` 也能打开，但个别浏览器会限制 `file://` 下的字体加载，建议用本地服务。
+> 直接双击 `index.html` 也能打开，但个别浏览器会限制 `file://` 下的字体加载，照片墙的 `fetch` 也需要 http 环境，建议用本地服务。
+
+## 想改点什么
+
+| 想改的内容 | 去哪里改 |
+| --- | --- |
+| **网站简介** | `index.html` 搜索「网站简介」，改 `blockquote` 里那两段 `<p>` |
+| 两个游戏的链接、卡片文案 | `index.html`（搜索 `qyx2007fk.github.io`） |
+| 照片墙标题、介绍 | `gallery.html` |
+| 上传页说明、token 帮助 | `upload.html` |
+| 房间目录的标题、介绍 | `index.html` 的 `#rooms` 区域 |
+| 工具间 / 收藏柜的空状态 | `index.html` 的 `#tools` / `#collection` 区域 |
+| 配色、字号、间距 | `styles.css` / `gallery.css` 顶部的变量 |
+| 星空、倾斜、彩蛋等交互 | `app.js`；照片墙逻辑在 `gallery.js` / `upload.js` |
+| 游戏截图 | 替换 `assets/*.webp`，保持 1200×750（16:10） |
+| 社交分享封面 | `assets/og-cover.png`（1200×630） |
+
+## 以后怎么往里加东西
+
+### 加一款新游戏
+
+复制小游戏区里任意一张 `.game-card`，改链接、截图、`alt`、标题、描述和标签；再把「房间目录」里游戏厅的「2 款已上线」改成实际数量。
+
+### 工具 / 收藏有内容了
+
+把对应的 `.empty-room` 空状态整块换成一个或多个内容卡片。工具建议保留 `#tools` 的标题，收藏建议保留「收藏柜、一个格子放一件」的说法。不确定排版就直接把素材丢给我。
+
+### 照片墙
+
+上传页已经处理好「压图 + 提交 + 更新清单」，平时不需要手动改 `gallery/index.json`。想批量整理或删除照片，直接改仓库里的 `gallery/` 和 `index.json` 也可以。
+
+### 加一个新房间
+
+1. 在「房间目录」里复制一张 `.room-card`，改 `data-room`、编号、标题、描述和 `href`；
+2. 下面复制一个同级别 section，改 `id`、编号和内容；
+3. 导航、后面的编号顺延。
 
 ## 部署
 
@@ -99,28 +134,33 @@ git commit -m "更新妙妙屋"
 git push
 ```
 
-等一两分钟，线上自动更新。
-
-如果以后要换域名或改成子路径，记得同步改 `index.html` 里的 `canonical`、`og:image`、`twitter:image`；换域名再加一个 `CNAME` 文件。
+等一两分钟线上自动更新。换域名或改成子路径时，记得同步改 `canonical`、`og:image`、`twitter:image`；换域名再加一个 `CNAME` 文件。
 
 ## 文件结构
 
 ```text
 qyx-wonder-room/
-├── index.html              # 首页（房间目录 / 游戏 / 工具 / 收藏 / 简介）
-├── 404.html                # 走错房间时的小提示
-├── styles.css              # 全部样式（夜间 / 日间主题、房间卡片、空状态）
-├── app.js                  # 星空、滚动、倾斜、开灯、彩蛋
-├── favicon.svg             # 站点图标
-├── site.webmanifest        # 添加到主屏幕用
+├── index.html              # 首页
+├── gallery.html            # 照片墙
+├── upload.html             # 上传页（屋主）
+├── 404.html                # 走错房间
+├── styles.css              # 全站样式
+├── gallery.css             # 照片墙 / 上传页样式
+├── app.js                  # 星空、主题、滚动、彩蛋
+├── gallery.js              # 照片墙渲染 + 灯箱
+├── upload.js               # token、压图、GitHub 提交
+├── favicon.svg
+├── site.webmanifest
 ├── README.md
+├── gallery/
+│   └── index.json          # 照片清单
 └── assets/
-    ├── lab-zero.webp       # 首屏截图
-    ├── lab-zero-boss.webp  # 游戏卡截图
-    ├── toon-blaster.webp   # 卡通大乱斗截图
-    ├── zcool-subset.woff2  # 站酷快乐体（按页面用字裁剪）
-    ├── fredoka-latin.woff2 # Fredoka 拉丁字母
-    ├── og-cover.png        # 分享封面 1200×630
+    ├── lab-zero.webp
+    ├── lab-zero-boss.webp
+    ├── toon-blaster.webp
+    ├── zcool-subset.woff2
+    ├── fredoka-latin.woff2
+    ├── og-cover.png
     └── apple-touch-icon.png
 ```
 
@@ -133,4 +173,4 @@ qyx-wonder-room/
 
 ## 兼容性
 
-面向现代浏览器（Chrome / Edge / Safari / Firefox 近两年的版本）。开启 `prefers-reduced-motion` 时，星空、滚动进场、卡片倾斜等动态效果会自动收敛为静态。
+面向现代浏览器（Chrome / Edge / Safari / Firefox 近两年的版本）。照片上传使用 Canvas 压缩和 GitHub API，需要浏览器允许 `fetch` 到 `api.github.com`；开启 `prefers-reduced-motion` 时，星空、进场和倾斜等动态效果会收敛为静态。
