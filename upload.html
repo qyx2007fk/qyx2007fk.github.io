@@ -160,6 +160,41 @@
     </div>
   </section>
 
+  <section class="upload-panel manage-panel" id="manage" aria-labelledby="manageTitle">
+    <div class="panel-head">
+      <div>
+        <p class="panel-kicker">STEP 03</p>
+        <h2 id="manageTitle">管理照片</h2>
+      </div>
+      <span class="file-count" id="manageCount">—</span>
+    </div>
+    <p class="panel-desc">删掉传错的照片。删除会从照片墙和仓库里移除，并提交到 GitHub；Git 历史里仍可能留有记录。</p>
+
+    <div class="manage-locked" id="manageLocked">
+      <p>连接 GitHub 之后，这里会列出照片墙上的所有照片。</p>
+      <button class="btn btn-ghost" id="manageConnect" type="button">去连接 GitHub</button>
+    </div>
+
+    <div class="manage-body" id="manageBody" hidden>
+      <div class="manage-toolbar">
+        <div class="manage-toolbar-left">
+          <button class="text-btn" id="manageSelectAll" type="button">全选</button>
+          <button class="text-btn" id="manageClear" type="button">清空选择</button>
+          <button class="text-btn" id="manageRefresh" type="button">刷新列表</button>
+        </div>
+        <span class="manage-selected" id="manageSelected">已选 0 张</span>
+      </div>
+      <div class="manage-grid" id="manageGrid"></div>
+      <p class="manage-empty" id="manageEmpty" hidden>照片墙还没有照片。</p>
+      <p class="manage-error" id="manageError" role="alert" hidden></p>
+      <div class="upload-actions manage-actions">
+        <button class="btn btn-danger" id="manageDelete" type="button" disabled>删除所选</button>
+        <span class="upload-hint" id="manageHint">选中照片后点删除。</span>
+      </div>
+      <p class="manage-status" id="manageStatus" role="status"></p>
+    </div>
+  </section>
+
 </main>
 
 <footer class="site-foot">

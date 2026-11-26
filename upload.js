@@ -40,13 +40,28 @@
     successPanel: document.getElementById('successPanel'),
     successText: document.getElementById('successText'),
     successLink: document.getElementById('successLink'),
-    againBtn: document.getElementById('againBtn')
+    againBtn: document.getElementById('againBtn'),
+    manageLocked: document.getElementById('manageLocked'),
+    manageBody: document.getElementById('manageBody'),
+    manageCount: document.getElementById('manageCount'),
+    manageGrid: document.getElementById('manageGrid'),
+    manageEmpty: document.getElementById('manageEmpty'),
+    manageError: document.getElementById('manageError'),
+    manageSelected: document.getElementById('manageSelected'),
+    manageDelete: document.getElementById('manageDelete'),
+    manageHint: document.getElementById('manageHint'),
+    manageStatus: document.getElementById('manageStatus'),
+    manageSelectAll: document.getElementById('manageSelectAll'),
+    manageClear: document.getElementById('manageClear'),
+    manageRefresh: document.getElementById('manageRefresh'),
+    manageConnect: document.getElementById('manageConnect')
   };
 
   if (!els.uploadBtn) return;
 
   var token = '';
   var files = [];
+  var managePhotos = [];
   var busy = false;
   var uid = 0;
 
@@ -138,7 +153,7 @@
     if (err.status === 401) return 'token 无效或过期了，重新生成一枚再试。';
     if (err.status === 403) return 'GitHub 拒绝了这次操作：token 可能没有 Contents 写权限，或者触发了频率限制。';
     if (err.status === 404) return '找不到这个仓库，确认 token 的 Repository access 里有 qyx2007fk.github.io。';
-    if (err.status === 422) return '仓库刚刚有更新，再点一次上传就好。';
+    if (err.status === 422) return '仓库刚刚有更新，再试一次就好。';
     if (err instanceof TypeError) return '网络好像断了，或者浏览器拦住了请求。检查网络后再试。';
     return err.message || '出了点问题，再试一次。';
   }
@@ -204,6 +219,7 @@
     } else {
       els.uploadHint.textContent = '选好照片后，点上传。';
     }
+    updateManageUI();
   }
 
   function verifyToken(silent) {
@@ -232,6 +248,7 @@
         setTokenState('已连接', 'is-ok');
         hideError(els.tokenError);
         updateReady();
+        loadManage();
         return true;
       })
       .catch(function (err) {
@@ -243,6 +260,7 @@
           forgetToken();
         }
         updateReady();
+        resetManage();
         if (!silent) console.warn('[token]', err.message);
         return false;
       });
@@ -262,6 +280,7 @@
     setTokenState('未保存', 'is-wait');
     hideError(els.tokenError);
     updateReady();
+    resetManage();
   });
   els.remember.addEventListener('change', function () {
     if (token) storeToken(token, els.remember.checked);
@@ -274,6 +293,7 @@
     setTokenState('未连接', '');
     hideError(els.tokenError);
     updateReady();
+    resetManage();
     els.tokenInput.focus();
   });
 
@@ -730,6 +750,258 @@
       });
   }
 
+
+  /* ---------- 管理照片（删除） ---------- */
+  function manageDateTime(photo) {
+    var m = String((photo && photo.file) || '').match(/photo-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})/);
+    if (m) return m[1] + '.' + m[2] + '.' + m[3] + ' ' + m[4] + ':' + m[5];
+    var date = String((photo && photo.date) || '');
+    return date ? date.replace(/-/g, '.') : '';
+  }
+
+  function updateManageUI() {
+    if (!els.manageDelete) return;
+    var selected = managePhotos.filter(function (p) { return p.selected; }).length;
+    els.manageSelected.textContent = '已选 ' + selected + ' 张';
+    els.manageDelete.disabled = busy || selected === 0 || !token;
+    els.manageDelete.textContent = selected ? '删除所选（' + selected + '）' : '删除所选';
+    els.manageHint.textContent = selected ? '确认后提交到 GitHub。' : '选中照片后点删除。';
+    els.manageGrid.querySelectorAll('input').forEach(function (cb) { cb.disabled = busy; });
+    els.manageSelectAll.disabled = busy || !managePhotos.length;
+    els.manageClear.disabled = busy || !managePhotos.length;
+    els.manageRefresh.disabled = busy || !token;
+  }
+
+  function resetManage() {
+    managePhotos = [];
+    if (!els.manageBody) return;
+    els.manageBody.hidden = true;
+    els.manageLocked.hidden = false;
+    els.manageCount.textContent = '—';
+    els.manageGrid.innerHTML = '';
+    els.manageEmpty.hidden = true;
+    els.manageError.hidden = true;
+    els.manageStatus.textContent = '';
+    els.manageStatus.classList.remove('is-error');
+    els.manageSelected.textContent = '已选 0 张';
+    els.manageDelete.disabled = true;
+    updateManageUI();
+  }
+
+  function renderManage() {
+    managePhotos.forEach(function (photo) { photo.selected = false; });
+    els.manageGrid.innerHTML = '';
+    els.manageCount.textContent = managePhotos.length + ' 张';
+    els.manageEmpty.hidden = managePhotos.length > 0;
+
+    managePhotos.forEach(function (photo) {
+      var label = document.createElement('label');
+      label.className = 'manage-item';
+
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.setAttribute('aria-label', '选择照片：' + (manageDateTime(photo) || photo.file));
+
+      var img = document.createElement('img');
+      img.src = 'gallery/' + encodeURIComponent(photo.file);
+      img.alt = photo.caption || '照片缩略图';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+
+      var meta = document.createElement('span');
+      meta.className = 'manage-meta';
+      var time = document.createElement('time');
+      time.textContent = manageDateTime(photo);
+      var cap = document.createElement('span');
+      cap.textContent = photo.caption || '（没有说明）';
+      meta.appendChild(time);
+      meta.appendChild(cap);
+
+      label.appendChild(cb);
+      label.appendChild(img);
+      label.appendChild(meta);
+      cb.addEventListener('change', function () {
+        photo.selected = cb.checked;
+        label.classList.toggle('is-selected', cb.checked);
+        updateManageUI();
+      });
+      els.manageGrid.appendChild(label);
+    });
+
+    updateManageUI();
+  }
+
+  function loadManage() {
+    if (!token) { resetManage(); return; }
+    if (busy) return;
+    els.manageLocked.hidden = true;
+    els.manageBody.hidden = false;
+    els.manageCount.textContent = '读取中…';
+    els.manageError.hidden = true;
+    els.manageEmpty.hidden = true;
+    els.manageStatus.textContent = '正在读取照片墙…';
+    els.manageStatus.classList.remove('is-error');
+    els.manageGrid.innerHTML = '';
+    els.manageSelected.textContent = '已选 0 张';
+    els.manageDelete.disabled = true;
+
+    gh('/repos/' + OWNER + '/' + REPO + '/contents/gallery/index.json?ref=' + encodeURIComponent(BRANCH))
+      .then(function (file) {
+        if (!file || !file.content) return { photos: [] };
+        return JSON.parse(decodeBase64Utf8(file.content));
+      })
+      .then(function (data) {
+        managePhotos = (Array.isArray(data && data.photos) ? data.photos : []).filter(function (p) {
+          return p && typeof p.file === 'string' && p.file;
+        });
+        managePhotos.sort(function (a, b) {
+          return String(b.file || '').localeCompare(String(a.file || ''));
+        });
+        renderManage();
+        els.manageStatus.textContent = '';
+        els.manageStatus.classList.remove('is-error');
+      })
+      .catch(function (err) {
+        if (err.status === 404) {
+          managePhotos = [];
+          renderManage();
+          els.manageStatus.textContent = '';
+          return;
+        }
+        els.manageStatus.textContent = '';
+        els.manageCount.textContent = '—';
+        showError(els.manageError, '照片列表没加载出来：' + messageFor(err));
+        console.warn('[manage]', err.message);
+      });
+  }
+
+  function deleteSelected() {
+    if (busy || !token) return;
+    var chosen = managePhotos.filter(function (p) { return p.selected; });
+    if (!chosen.length) return;
+    if (!window.confirm('确定从照片墙删除这 ' + chosen.length + ' 张照片吗？\n\n会同时从仓库移除照片文件并提交到 GitHub。')) return;
+
+    var chosenFiles = {};
+    chosen.forEach(function (p) { chosenFiles[p.file] = true; });
+
+    busy = true;
+    updateReady();
+    updateManageUI();
+    els.manageError.hidden = true;
+    els.manageStatus.textContent = '正在提交删除…';
+    els.manageStatus.classList.remove('is-error');
+
+    var headSha = '';
+    var baseTree = '';
+
+    gh('/repos/' + OWNER + '/' + REPO + '/git/ref/heads/' + BRANCH)
+      .then(function (ref) {
+        headSha = ref.object.sha;
+        return gh('/repos/' + OWNER + '/' + REPO + '/git/commits/' + headSha);
+      })
+      .then(function (commit) {
+        baseTree = commit.tree.sha;
+        return gh('/repos/' + OWNER + '/' + REPO + '/contents/gallery/index.json?ref=' + encodeURIComponent(BRANCH));
+      })
+      .then(function (file) {
+        if (!file || !file.content) throw new Error('照片清单读取失败，稍后再试。');
+        var manifest = JSON.parse(decodeBase64Utf8(file.content));
+        if (!manifest || !Array.isArray(manifest.photos)) throw new Error('照片清单格式不对。');
+        manifest.photos = manifest.photos.filter(function (p) { return !chosenFiles[p.file]; });
+        manifest.updated = new Date().toISOString();
+        var manifestText = JSON.stringify(manifest, null, 2) + '\n';
+        return gh('/repos/' + OWNER + '/' + REPO + '/git/blobs', {
+          method: 'POST',
+          body: JSON.stringify({ content: utf8ToBase64(manifestText), encoding: 'base64' })
+        }).then(function (blob) {
+          var entries = [{
+            path: 'gallery/index.json',
+            mode: '100644',
+            type: 'blob',
+            sha: blob.sha
+          }];
+          chosen.forEach(function (p) {
+            entries.push({
+              path: 'gallery/' + p.file,
+              mode: '100644',
+              type: 'blob',
+              sha: null
+            });
+          });
+          return gh('/repos/' + OWNER + '/' + REPO + '/git/trees', {
+            method: 'POST',
+            body: JSON.stringify({ base_tree: baseTree, tree: entries })
+          });
+        });
+      })
+      .then(function (tree) {
+        return gh('/repos/' + OWNER + '/' + REPO + '/git/commits', {
+          method: 'POST',
+          body: JSON.stringify({
+            message: '照片墙：删除 ' + chosen.length + ' 张照片',
+            tree: tree.sha,
+            parents: [headSha]
+          })
+        });
+      })
+      .then(function (commit) {
+        return gh('/repos/' + OWNER + '/' + REPO + '/git/refs/heads/' + BRANCH, {
+          method: 'PATCH',
+          body: JSON.stringify({ sha: commit.sha, force: false })
+        });
+      })
+      .then(function () {
+        managePhotos = managePhotos.filter(function (p) { return !chosenFiles[p.file]; });
+        busy = false;
+        updateReady();
+        renderManage();
+        els.manageStatus.textContent = '已删除 ' + chosen.length + ' 张照片。GitHub Pages 大约 1 分钟后更新，稍后刷新照片墙就能看到。';
+        els.manageStatus.classList.remove('is-error');
+        els.manageError.hidden = true;
+      })
+      .catch(function (err) {
+        busy = false;
+        updateReady();
+        updateManageUI();
+        els.manageStatus.textContent = '删除失败：' + messageFor(err);
+        els.manageStatus.classList.add('is-error');
+        console.warn('[manage]', err.message);
+      });
+  }
+
+  els.manageSelectAll.addEventListener('click', function () {
+    if (busy) return;
+    managePhotos.forEach(function (p) { p.selected = true; });
+    els.manageGrid.querySelectorAll('.manage-item').forEach(function (label) {
+      label.classList.add('is-selected');
+      var cb = label.querySelector('input');
+      if (cb) cb.checked = true;
+    });
+    updateManageUI();
+  });
+
+  els.manageClear.addEventListener('click', function () {
+    if (busy) return;
+    managePhotos.forEach(function (p) { p.selected = false; });
+    els.manageGrid.querySelectorAll('.manage-item').forEach(function (label) {
+      label.classList.remove('is-selected');
+      var cb = label.querySelector('input');
+      if (cb) cb.checked = false;
+    });
+    updateManageUI();
+  });
+
+  els.manageRefresh.addEventListener('click', function () {
+    if (!busy) loadManage();
+  });
+
+  els.manageConnect.addEventListener('click', function () {
+    els.tokenInput.focus();
+    els.tokenInput.scrollIntoView({ behavior: prefersReduced() ? 'auto' : 'smooth', block: 'center' });
+  });
+
+  els.manageDelete.addEventListener('click', deleteSelected);
+
   els.uploadBtn.addEventListener('click', upload);
 
   /* ---------- 初始化 ---------- */
@@ -738,6 +1010,7 @@
     if (!stored) {
       setTokenState('未连接', '');
       els.remember.checked = false;
+      resetManage();
       updateReady();
       return;
     }

@@ -50,6 +50,14 @@
 
 一次最多 20 张；单张超过 30MB 会被跳过。
 
+### 删照片（屋主）
+
+- 照片墙页面点「管理照片 / 删除」，或直接打开 <https://qyx2007fk.github.io/upload.html#manage>
+- 连接同一枚 token 后，会列出照片墙上的所有照片（最新在前）
+- 勾选传错的照片 →「删除所选」→ 确认
+- 会同时移除照片文件、更新 `gallery/index.json`，并提交到 GitHub；GitHub Pages 约 1 分钟后更新
+- Git 历史里仍可能保留被删照片的记录；如果照片敏感，需要在仓库层面重写历史
+
 ### token 存在哪
 
 - token 只保存在**当前浏览器**：默认 `sessionStorage`；勾选「记住这台设备」后存 `localStorage`。
@@ -66,7 +74,7 @@ gallery/
 └── photo-....jpg       # 压缩后的照片
 ```
 
-照片墙读取 `gallery/index.json` 渲染。想删照片：在 GitHub 删除对应图片，并把 `index.json` 里那一条删掉，提交即可。
+照片墙读取 `gallery/index.json` 渲染。想删照片：用上传页的「管理照片」，或者手动删除图片并更新 `index.json`。
 
 ## 页面结构
 
@@ -80,7 +88,7 @@ gallery/
    - 敲门：GitHub + 复制本页链接
    - 彩蛋：依次敲 `qyx` 会下星星雨
 2. **照片墙 `gallery.html`**：瀑布流 + 灯箱（键盘 ← → / Esc、手机左右滑），可按文件时间正序 / 倒序
-3. **上传页 `upload.html`**：token 连接、选照片、压缩、提交
+3. **上传页 `upload.html`**：token 连接、选照片、压缩、提交、管理 / 删除照片
 4. **404 `404.html`**：走错房间时的小提示
 
 ## 本地预览
@@ -121,7 +129,7 @@ python3 -m http.server 4173
 
 ### 照片墙
 
-上传页已经处理好「压图 + 提交 + 更新清单」，平时不需要手动改 `gallery/index.json`。想批量整理或删除照片，直接改仓库里的 `gallery/` 和 `index.json` 也可以。
+上传页已经处理好「压图 + 提交 + 更新清单」，平时不需要手动改 `gallery/index.json`。传错的照片可以在上传页底部「管理照片」里勾选删除，也可以直接改仓库里的 `gallery/` 和 `index.json`。
 
 ### 加一个新房间
 
