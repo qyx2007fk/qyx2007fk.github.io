@@ -1,0 +1,24 @@
+{
+  "name": "qyx的妙妙屋",
+  "short_name": "妙妙屋",
+  "description": "一间装着奇思妙想的小屋，两款打开网页就能玩的小游戏。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0716",
+  "theme_color": "#0b0716",
+  "icons": [
+    {
+      "src": "assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
