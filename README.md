@@ -1,6 +1,8 @@
 # qyx的妙妙屋
 
 > 一间装着奇思妙想的小屋。现在住进来的是两款打开网页就能玩的小游戏，以后还会慢慢添置新的房间。
+>
+> **线上地址：<https://qyx2007fk.github.io/>**
 
 这是 qyx 的个人主页，纯静态站点：**没有构建步骤，没有框架，没有 npm 依赖**，HTML / CSS / 原生 JS 手搓。
 
@@ -77,10 +79,9 @@ https://qyx2007fk.github.io/wonder-room/
 
 站内所有资源都是相对路径，放在子路径下也能正常工作。
 
-### 部署后可以再补两件事
+### 部署后还可以再补的
 
-- 把 `index.html` 里的 `og:image` / `twitter:image` 换成绝对地址（方便微信、微博、Telegram 等抓取分享封面）：
-  `https://qyx2007fk.github.io/assets/og-cover.png`
+- `index.html` 里的 `og:image` / `twitter:image` / `canonical` 已经指向 `https://qyx2007fk.github.io/`；如果之后换域名或改成子路径，记得一起改。
 - 想换域名的话，在仓库根目录加一个 `CNAME` 文件，内容写你的域名。
 
 ## 文件结构
