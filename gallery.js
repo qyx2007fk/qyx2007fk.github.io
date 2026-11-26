@@ -12,6 +12,8 @@
   var errorBox = document.getElementById('galleryError');
   var count = document.getElementById('galleryCount');
   var retry = document.getElementById('retryGallery');
+  var sortWrap = document.getElementById('gallerySort');
+  var sortBtns = sortWrap ? Array.prototype.slice.call(sortWrap.querySelectorAll('.sort-btn')) : [];
 
   var lightbox = document.getElementById('lightbox');
   var lightboxImg = document.getElementById('lightboxImg');
@@ -27,6 +29,7 @@
   var current = 0;
   var isOpen = false;
   var lastFocus = null;
+  var sortOrder = readSortOrder();
 
   function photoUrl(file) {
     return 'gallery/' + encodeURIComponent(file);
@@ -37,6 +40,64 @@
     var parts = String(value).slice(0, 10).split('-');
     if (parts.length !== 3) return '';
     return parts[0] + '.' + parts[1] + '.' + parts[2];
+  }
+
+  function fileDateTime(photo) {
+    var name = String((photo && photo.file) || '');
+    var m = name.match(/photo-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})/);
+    if (m) {
+      return {
+        date: m[1] + '.' + m[2] + '.' + m[3],
+        time: m[4] + ':' + m[5],
+        stamp: m[1] + m[2] + m[3] + m[4] + m[5] + m[6]
+      };
+    }
+    var date = formatDate(photo && photo.date);
+    var digits = String((photo && photo.date) || '').replace(/\D/g, '');
+    return { date: date, time: '', stamp: digits ? digits + '000000' : '' };
+  }
+
+  function photoStamp(photo) {
+    return fileDateTime(photo).stamp.padEnd(14, '0');
+  }
+
+  function readSortOrder() {
+    var value = '';
+    try {
+      var fromUrl = new URLSearchParams(window.location.search).get('sort');
+      if (fromUrl === 'asc' || fromUrl === 'desc') value = fromUrl;
+      if (!value) value = localStorage.getItem('qyx-gallery-sort') || '';
+    } catch (e) { /* 隐私模式下忽略 */ }
+    return value === 'asc' ? 'asc' : 'desc';
+  }
+
+  function updateSortButtons() {
+    sortBtns.forEach(function (btn) {
+      var active = btn.getAttribute('data-sort') === sortOrder;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+  }
+
+  function saveSortOrder() {
+    try { localStorage.setItem('qyx-gallery-sort', sortOrder); } catch (e) { /* ignore */ }
+    try {
+      var url = new URL(window.location.href);
+      url.searchParams.set('sort', sortOrder);
+      window.history.replaceState(null, '', url);
+    } catch (e) { /* ignore */ }
+  }
+
+  function sortPhotos() {
+    photos.sort(function (a, b) {
+      var ak = photoStamp(a);
+      var bk = photoStamp(b);
+      var cmp = ak < bk ? -1 : ak > bk ? 1 : 0;
+      if (cmp !== 0) return sortOrder === 'asc' ? cmp : -cmp;
+      var af = String(a.file || '');
+      var bf = String(b.file || '');
+      return sortOrder === 'asc' ? af.localeCompare(bf) : bf.localeCompare(af);
+    });
   }
 
   function setCount(text) {
@@ -55,6 +116,7 @@
       grid.appendChild(block);
     }
     setCount('正在数照片…');
+    if (sortWrap) sortWrap.hidden = true;
   }
 
   function showEmpty() {
@@ -62,7 +124,8 @@
     empty.hidden = false;
     errorBox.hidden = true;
     grid.setAttribute('aria-busy', 'false');
-    setCount('照片墙还空着');
+    setCount('0 张照片');
+    if (sortWrap) sortWrap.hidden = true;
   }
 
   function showError() {
@@ -71,6 +134,7 @@
     errorBox.hidden = false;
     grid.setAttribute('aria-busy', 'false');
     setCount('照片墙暂时不可用');
+    if (sortWrap) sortWrap.hidden = true;
   }
 
   function render() {
@@ -84,6 +148,7 @@
     grid.innerHTML = '';
     grid.setAttribute('aria-busy', 'false');
     setCount('共 ' + photos.length + ' 张照片');
+    if (sortWrap) sortWrap.hidden = false;
 
     photos.forEach(function (photo, index) {
       var fig = document.createElement('figure');
@@ -116,11 +181,11 @@
         cap.textContent = photo.caption;
         meta.appendChild(cap);
       }
-      var date = formatDate(photo.date);
-      if (date) {
+      var when = fileDateTime(photo);
+      if (when.date) {
         var dateEl = document.createElement('span');
         dateEl.className = 'gallery-date';
-        dateEl.textContent = date;
+        dateEl.textContent = when.date + (when.time ? ' ' + when.time : '');
         meta.appendChild(dateEl);
       }
 
@@ -146,10 +211,7 @@
         photos = (Array.isArray(data && data.photos) ? data.photos : []).filter(function (p) {
           return p && typeof p.file === 'string' && p.file;
         });
-        photos.sort(function (a, b) {
-          return String(b.date || '').localeCompare(String(a.date || '')) ||
-            String(b.file || '').localeCompare(String(a.file || ''));
-        });
+        sortPhotos();
         render();
       })
       .catch(function (err) {
@@ -168,8 +230,9 @@
     lightboxImg.alt = photo.caption || '照片墙照片 ' + (current + 1);
     lightboxCaption.textContent = photo.caption || '';
 
-    var date = formatDate(photo.date);
-    var meta = (date ? date + ' · ' : '') + (current + 1) + ' / ' + photos.length;
+    var when = fileDateTime(photo);
+    var meta = (when.date ? when.date + (when.time ? ' ' + when.time : '') + ' · ' : '') +
+      (current + 1) + ' / ' + photos.length;
     lightboxMeta.textContent = meta;
 
     var many = photos.length > 1;
@@ -238,6 +301,20 @@
     document.removeEventListener('keydown', onKeydown);
     if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
   }
+
+  sortBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var next = btn.getAttribute('data-sort');
+      if (!next || next === sortOrder || !photos.length) return;
+      sortOrder = next;
+      updateSortButtons();
+      saveSortOrder();
+      sortPhotos();
+      render();
+    });
+  });
+
+  updateSortButtons();
 
   closeBtn.addEventListener('click', closeLightbox);
   prevBtn.addEventListener('click', function () { showPhoto(current - 1); });

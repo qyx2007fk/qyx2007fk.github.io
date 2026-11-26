@@ -114,12 +114,19 @@
       <a class="btn btn-primary gallery-upload-btn" href="upload.html">
         <svg class="icon"><use href="#i-camera"/></svg> 上传照片
       </a>
-      <p class="gallery-count" id="galleryCount" aria-live="polite">正在数照片…</p>
       <p class="gallery-side-note">屋主入口 · 上传后自动上墙</p>
     </div>
   </section>
 
   <section class="gallery-body wrap" aria-label="照片墙">
+    <div class="gallery-toolbar">
+      <p class="gallery-count" id="galleryCount" aria-live="polite">正在数照片…</p>
+      <div class="gallery-sort" id="gallerySort" role="group" aria-label="按照片文件时间排序" hidden>
+        <span class="sort-label">排序</span>
+        <button class="sort-btn is-active" type="button" data-sort="desc" aria-pressed="true">最新在前</button>
+        <button class="sort-btn" type="button" data-sort="asc" aria-pressed="false">最早在前</button>
+      </div>
+    </div>
     <div class="gallery-grid" id="galleryGrid" aria-busy="true"></div>
 
     <div class="gallery-empty" id="galleryEmpty" hidden>
